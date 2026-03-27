@@ -10,6 +10,8 @@
     "dev": "gulp && cross-env NODE_ENV='development' webpack --config ./.webpack/index.ts",
     "build": "yarn test && yarn buildonly",
     "buildonly": "gulp && cross-env NODE_ENV='production' webpack --config ./.webpack/index.ts",
+    "deploy:networktest": "sh ./scripts/deploy-networktest.sh",
+    "bod": "yarn buildonly && yarn deploy:networktest",
     "fixtures": "ts-node test/fixtures.ts",
     "analyze": "cross-env NODE_ENV='production' webpack --analyze --config ./.webpack/index.ts",
     "test": "jest --json --outputFile=./test/dicts/dicts_test_result.json --testTimeout 60000; yarn parsetest",

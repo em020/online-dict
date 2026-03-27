@@ -126,6 +126,189 @@ function updateNetworkTestGlobalQ(attempt) {
   }
 }
 
+var latestSelectionLookup = null;
+
+function readCurrentSelectionLookup() {
+  var selectionText = '';
+  var context = '';
+
+  if (typeof window.eudicGetSelection === 'function') {
+    var selection = window.eudicGetSelection();
+    selectionText = selection && selection.selectionText ? String(selection.selectionText).trim() : '';
+    context = selection && selection.context ? String(selection.context) : '';
+  } else if (typeof window.getSelection === 'function') {
+    selectionText = String(window.getSelection()).trim();
+  }
+
+  if (!selectionText) {
+    return null;
+  }
+
+  return {
+    selectionText: selectionText,
+    context: context
+  };
+}
+
+function updateLatestSelectionLookup() {
+  var currentSelection = readCurrentSelectionLookup();
+  if (currentSelection) {
+    latestSelectionLookup = currentSelection;
+    console.log('[networktest] cached selection lookup', currentSelection.selectionText);
+  }
+  return currentSelection;
+}
+
+function getSelectionLookupCommand() {
+  var selection = readCurrentSelectionLookup();
+  if (!selection && latestSelectionLookup) {
+    selection = latestSelectionLookup;
+  }
+
+  if (!selection) {
+    console.log('[networktest] no selection available for lookup');
+    return null;
+  }
+
+  var selectionText = selection.selectionText;
+  var context = selection.context;
+
+  if (typeof window.eudic_generateSearchWordCmd === 'function') {
+    return window.eudic_generateSearchWordCmd(selectionText, context);
+  }
+
+  return 'cmd://dict/searchword?word=' + encodeURIComponent(selectionText);
+}
+
+function triggerSelectionLookup() {
+  var cmd = getSelectionLookupCommand();
+  if (!cmd) {
+    return;
+  }
+
+  console.log('[networktest] selection lookup command', cmd);
+
+  if (typeof window.eudic_clientCallback === 'function') {
+    window.eudic_clientCallback(cmd);
+    return;
+  }
+
+  window.location.href = cmd;
+}
+
+function updateSelectionLookupButtonState(button) {
+  if (!button) {
+    return;
+  }
+
+  var cmd = getSelectionLookupCommand();
+  var enabled = !!cmd;
+  if ('disabled' in button) {
+    button.disabled = !enabled;
+  }
+  button.style.opacity = enabled ? '1' : '0.45';
+  button.style.pointerEvents = enabled ? 'auto' : 'none';
+}
+
+function handleSelectionLookupButtonPress(event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  updateLatestSelectionLookup();
+  triggerSelectionLookup();
+}
+
+function injectSelectionLookupButton() {
+  if (document.getElementById('networktest-selection-lookup-button')) {
+    return;
+  }
+
+  var scrollToTop = document.getElementById('scrollToTop');
+  var button;
+
+  if (scrollToTop) {
+    var listItem = document.createElement('li');
+    listItem.id = 'networktest-selection-lookup-button';
+    listItem.title = '查找选中内容';
+
+    var iconBox = document.createElement('span');
+    iconBox.className = 'imgBox';
+    iconBox.style.display = 'flex';
+    iconBox.style.alignItems = 'center';
+    iconBox.style.justifyContent = 'center';
+
+    var iconText = document.createElement('span');
+    iconText.innerText = '查';
+    iconText.style.display = 'block';
+    iconText.style.fontSize = '16px';
+    iconText.style.fontWeight = '700';
+    iconText.style.color = 'rgb(47, 47, 47)';
+
+    iconBox.appendChild(iconText);
+    listItem.appendChild(iconBox);
+
+    var scrollBtn = document.getElementById('scrollBtn');
+    if (scrollBtn && scrollBtn.parentNode === scrollToTop) {
+      scrollToTop.insertBefore(listItem, scrollBtn.nextSibling);
+    } else {
+      scrollToTop.appendChild(listItem);
+    }
+
+    button = listItem;
+  } else {
+    button = document.createElement('button');
+    button.id = 'networktest-selection-lookup-button';
+    button.type = 'button';
+    button.innerText = '查';
+    button.style.position = 'fixed';
+    button.style.top = '12px';
+    button.style.right = '12px';
+    button.style.zIndex = '2147483647';
+    button.style.padding = '8px 12px';
+    button.style.border = 'none';
+    button.style.borderRadius = '999px';
+    button.style.background = '#1a73e8';
+    button.style.color = '#fff';
+    button.style.fontSize = '13px';
+    button.style.fontWeight = '600';
+    button.style.boxShadow = '0 6px 18px rgba(26, 115, 232, 0.28)';
+    button.style.webkitAppearance = 'none';
+    (document.body || document.documentElement).appendChild(button);
+  }
+
+  button.addEventListener('mousedown', handleSelectionLookupButtonPress);
+  button.addEventListener('touchstart', handleSelectionLookupButtonPress, {
+    passive: false
+  });
+  button.addEventListener('click', function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+  });
+
+  updateSelectionLookupButtonState(button);
+
+  document.addEventListener('selectionchange', function() {
+    updateLatestSelectionLookup();
+    updateSelectionLookupButtonState(button);
+  });
+
+  document.addEventListener('mouseup', function() {
+    updateLatestSelectionLookup();
+    updateSelectionLookupButtonState(button);
+  });
+
+  document.addEventListener('touchend', function() {
+    window.setTimeout(function() {
+      updateLatestSelectionLookup();
+      updateSelectionLookupButtonState(button);
+    }, 0);
+  });
+
+  console.log('[networktest] selection lookup button injected');
+}
+
 function onNetworkTestClick() {
   console.log('[networktest] click handler entered');
   var resultEl = document.getElementById('network-test-result');
@@ -158,3 +341,4 @@ function onNetworkTestClick() {
 injectFoldOverrideStyle();
 observeForcedFoldTargets();
 updateNetworkTestGlobalQ(0);
+injectSelectionLookupButton();
