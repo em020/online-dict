@@ -57,6 +57,9 @@ export function mainConfig(publicDir: string, outputDir: string, entryObject:any
         devtool: process.env.NODE_ENV === 'development' ? 'source-map' : false,
         plugins: [
             new webpack.ProgressPlugin(),
+            new webpack.DefinePlugin({
+                'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV === 'development' ? 'development' : 'production'),
+            }),
             new webpack.LoaderOptionsPlugin({
                 minimize: 'development' ? false : true,
             }),

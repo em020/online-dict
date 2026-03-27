@@ -20,6 +20,7 @@ export function renderReactToString<T>(ViewItem: React.FC<ViewPorps<T>>, doc: T,
     return `
     <div id="eudic-onlinedict-section-${uuid}">
         <link rel="stylesheet" href="file://index.css" />
+        <script defer src="file://index.js" charset="utf-8" type="text/javascript"></script>
         <script defer src="file://dict.js?id=${uuid}" charset="utf-8" type="text/javascript"></script>
         ${elementInnerHtml}
     </div>

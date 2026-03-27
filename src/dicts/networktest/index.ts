@@ -1,6 +1,17 @@
 import { HtmlDictPlugin } from '../../interface/IPlugin'
 import { NetworktestView } from './View'
 import { DictSearchResult } from '../helpers'
+import VConsole from 'vconsole'
+
+declare global {
+    interface Window {
+        __eudicNetworkTestVConsole?: VConsole
+    }
+}
+
+if (typeof window !== 'undefined' && !window.__eudicNetworkTestVConsole) {
+    window.__eudicNetworkTestVConsole = new VConsole()
+}
 
 export class NetworktestPlugin extends HtmlDictPlugin {
     async getPageResult(word: string): Promise<any> {
