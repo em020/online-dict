@@ -76,9 +76,6 @@ export function mainConfig(publicDir: string, outputDir: string, entryObject:any
                     test: /\.tsx?$/,
                     use: {
                         loader: 'ts-loader',
-                        options: {
-                            transpileOnly: true
-                        }
                     },
                 },
                 {
