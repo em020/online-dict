@@ -2,7 +2,6 @@ var gulp = require('gulp');
 var concat = require('gulp-concat');
 var babel = require('gulp-babel');
 var glob = require('glob');
-var terser = require('gulp-terser');
 var path = require('path');
 
 function buildAll(done) {
@@ -20,7 +19,6 @@ function buildAll(done) {
                 .pipe(babel({
                     presets: ['@babel/env']
                 }))
-                .pipe(terser())
                 .pipe(gulp.dest(destFolder));
         }
         patchJs.displayName = clickJs;

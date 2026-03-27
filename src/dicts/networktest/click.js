@@ -1,5 +1,29 @@
 "use strict";
 
+function updateNetworkTestGlobalQ(attempt) {
+  var globalQEl = document.getElementById('networktest-global-q');
+  if (!globalQEl) {
+    console.log('[networktest] global_q element missing');
+    return;
+  }
+
+  var globalQ = typeof window !== 'undefined' ? window.global_q : undefined;
+  if (typeof globalQ !== 'undefined' && globalQ !== null && globalQ !== '') {
+    console.log('[networktest] global_q found', globalQ);
+    globalQEl.innerText = 'global_q: ' + String(globalQ);
+    return;
+  }
+
+  console.log('[networktest] global_q unavailable', attempt);
+  globalQEl.innerText = 'global_q: ';
+
+  if (attempt < 10) {
+    window.setTimeout(function() {
+      updateNetworkTestGlobalQ(attempt + 1);
+    }, 300);
+  }
+}
+
 function onNetworkTestClick() {
   console.log('[networktest] click handler entered');
   var resultEl = document.getElementById('network-test-result');
@@ -28,3 +52,5 @@ function onNetworkTestClick() {
     resultEl.innerText = 'Error: ' + err.message;
   });
 }
+
+updateNetworkTestGlobalQ(0);

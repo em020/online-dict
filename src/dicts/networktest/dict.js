@@ -1,1 +1,211 @@
-"use strict";function _typeof(e){return _typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},_typeof(e)}function _createForOfIteratorHelper(e,n){var t="undefined"!=typeof Symbol&&e[Symbol.iterator]||e["@@iterator"];if(!t){if(Array.isArray(e)||(t=_unsupportedIterableToArray(e))||n&&e&&"number"==typeof e.length){t&&(e=t);var i=0,o=function(){};return{s:o,n:function(){return i>=e.length?{done:!0}:{done:!1,value:e[i++]}},e:function(e){throw e},f:o}}throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}var r,c=!0,l=!1;return{s:function(){t=t.call(e)},n:function(){var e=t.next();return c=e.done,e},e:function(e){l=!0,r=e},f:function(){try{c||null==t.return||t.return()}finally{if(l)throw r}}}}function _unsupportedIterableToArray(e,n){if(e){if("string"==typeof e)return _arrayLikeToArray(e,n);var t=Object.prototype.toString.call(e).slice(8,-1);return"Object"===t&&e.constructor&&(t=e.constructor.name),"Map"===t||"Set"===t?Array.from(e):"Arguments"===t||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t)?_arrayLikeToArray(e,n):void 0}}function _arrayLikeToArray(e,n){(null==n||n>e.length)&&(n=e.length);for(var t=0,i=new Array(n);t<n;t++)i[t]=e[t];return i}function onNetworkTestClick(){console.log("[networktest] click handler entered");var e=document.getElementById("network-test-result");e?(console.log("[networktest] result element found"),e.innerText="Fetching...",console.log("[networktest] starting fetch"),fetch("https://www.yunzhijia.com/yzjai/ai/chain",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"}).then((function(e){return console.log("[networktest] fetch response",e.status,e.statusText),e.text()})).then((function(n){console.log("[networktest] response text length",n.length),e.innerText=n})).catch((function(n){console.log("[networktest] fetch error",n&&n.message?n.message:n),e.innerText="Error: "+n.message}))):console.log("[networktest] result element missing")}function eudic_onlineDictPlugin_getParameterByName(e,n){e=e.replace(/[\[\]]/g,"\\$&");var t=new RegExp("[?&]"+e+"(=([^&#]*)|&|#|$)").exec(n);return t?t[2]?decodeURIComponent(t[2].replace(/\+/g," ")):"":null}function eudic_onlineDictPlugin_log(){if("undefined"!=typeof console&&"function"==typeof console.log){var e=Array.prototype.slice.call(arguments);e.unshift("[eudic-dict]"),console.log.apply(console,e)}}function eudic_onlineDictPlugin_getCurrentScript(){if(document.currentScript)return document.currentScript;var e=document.getElementsByTagName("script");return e&&0!==e.length?e[e.length-1]:null}function eudic_onlineDictPlugin_bindInput(e,n){var t=0,i=e.getAttribute("eudic-onlinedict-custom-onclick");if("1"!==e.getAttribute("data-eudic-onlinedict-bound")){var o=function(e){return eudic_onlineDictPlugin_log("invoke",i,e?e.type:"unknown"),n.call(this,e)};e.onclick=function(e){if(eudic_onlineDictPlugin_log("onclick",i,Date.now()-t),!(Date.now()-t<500))return o.call(this,e);eudic_onlineDictPlugin_log("skip-click-after-touch",i)},e.ontouchstart=function(e){return t=Date.now(),eudic_onlineDictPlugin_log("ontouchstart",i),o.call(this,e)},e.ontouchend=function(e){return t=Date.now(),eudic_onlineDictPlugin_log("ontouchend",i),o.call(this,e)},e.setAttribute("data-eudic-onlinedict-bound","1"),eudic_onlineDictPlugin_log("bound",i,e.tagName)}else eudic_onlineDictPlugin_log("already-bound",i,e.tagName)}function eudic_onlineDictPlugin_bindSection(e,n){if(e){var t=e.querySelectorAll("[eudic-onlinedict-custom-onclick]");if(eudic_onlineDictPlugin_log("section-found",n||"unknown",t?t.length:0),t&&t.length>0){var i,o=_createForOfIteratorHelper(t);try{for(o.s();!(i=o.n()).done;){var r=i.value,c=r.getAttribute("eudic-onlinedict-custom-onclick"),l=window[c];eudic_onlineDictPlugin_log("bind-attempt",c,_typeof(l)),"function"==typeof l&&eudic_onlineDictPlugin_bindInput(r,l)}}catch(e){o.e(e)}finally{o.f()}}}else eudic_onlineDictPlugin_log("section-missing",n)}function eudic_onlineDictPlugin_onloadFinish(){var e=eudic_onlineDictPlugin_getCurrentScript();if(e&&e.src){var n=eudic_onlineDictPlugin_getParameterByName("id",e.src);if(eudic_onlineDictPlugin_log("onload",e.src,n),n)return void eudic_onlineDictPlugin_bindSection(document.getElementById("eudic-onlinedict-section-"+n),n)}else eudic_onlineDictPlugin_log("current-script-missing");var t=document.querySelectorAll('[id^="eudic-onlinedict-section-"]');if(eudic_onlineDictPlugin_log("fallback-scan",t?t.length:0),t&&t.length>0){var i,o=_createForOfIteratorHelper(t);try{for(o.s();!(i=o.n()).done;){var r=i.value,c=r.id?r.id.replace("eudic-onlinedict-section-",""):"";eudic_onlineDictPlugin_bindSection(r,c)}}catch(e){o.e(e)}finally{o.f()}}}eudic_onlineDictPlugin_onloadFinish();
+"use strict";
+
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function updateNetworkTestGlobalQ(attempt) {
+  var globalQEl = document.getElementById('networktest-global-q');
+
+  if (!globalQEl) {
+    console.log('[networktest] global_q element missing');
+    return;
+  }
+
+  var globalQ = typeof window !== 'undefined' ? window.global_q : undefined;
+
+  if (typeof globalQ !== 'undefined' && globalQ !== null && globalQ !== '') {
+    console.log('[networktest] global_q found', globalQ);
+    globalQEl.innerText = 'global_q: ' + String(globalQ);
+    return;
+  }
+
+  console.log('[networktest] global_q unavailable', attempt);
+  globalQEl.innerText = 'global_q: ';
+
+  if (attempt < 10) {
+    window.setTimeout(function () {
+      updateNetworkTestGlobalQ(attempt + 1);
+    }, 300);
+  }
+}
+
+function onNetworkTestClick() {
+  console.log('[networktest] click handler entered');
+  var resultEl = document.getElementById('network-test-result');
+
+  if (!resultEl) {
+    console.log('[networktest] result element missing');
+    return;
+  }
+
+  console.log('[networktest] result element found');
+  resultEl.innerText = 'Fetching...';
+  console.log('[networktest] starting fetch');
+  fetch('https://www.yunzhijia.com/yzjai/ai/chain', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: '{}'
+  }).then(function (response) {
+    console.log('[networktest] fetch response', response.status, response.statusText);
+    return response.text();
+  }).then(function (response) {
+    console.log('[networktest] response text length', response.length);
+    resultEl.innerText = response;
+  })["catch"](function (err) {
+    console.log('[networktest] fetch error', err && err.message ? err.message : err);
+    resultEl.innerText = 'Error: ' + err.message;
+  });
+}
+
+updateNetworkTestGlobalQ(0);
+
+function eudic_onlineDictPlugin_getParameterByName(name, url) {
+  name = name.replace(/[\[\]]/g, '\\$&');
+  var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+      results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return '';
+  return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+function eudic_onlineDictPlugin_log() {
+  if (typeof console === 'undefined' || typeof console.log !== 'function') {
+    return;
+  }
+
+  var args = Array.prototype.slice.call(arguments);
+  args.unshift('[eudic-dict]');
+  console.log.apply(console, args);
+}
+
+function eudic_onlineDictPlugin_getCurrentScript() {
+  if (document.currentScript) {
+    return document.currentScript;
+  }
+
+  var scriptList = document.getElementsByTagName('script');
+
+  if (!scriptList || scriptList.length === 0) {
+    return null;
+  }
+
+  return scriptList[scriptList.length - 1];
+}
+
+function eudic_onlineDictPlugin_bindInput(item, func) {
+  var lastTouchTime = 0;
+  var handlerName = item.getAttribute('eudic-onlinedict-custom-onclick');
+
+  if (item.getAttribute('data-eudic-onlinedict-bound') === '1') {
+    eudic_onlineDictPlugin_log('already-bound', handlerName, item.tagName);
+    return;
+  }
+
+  var invoke = function invoke(event) {
+    eudic_onlineDictPlugin_log('invoke', handlerName, event ? event.type : 'unknown');
+    return func.call(this, event);
+  };
+
+  item.onclick = function (event) {
+    eudic_onlineDictPlugin_log('onclick', handlerName, Date.now() - lastTouchTime);
+
+    if (Date.now() - lastTouchTime < 500) {
+      eudic_onlineDictPlugin_log('skip-click-after-touch', handlerName);
+      return;
+    }
+
+    return invoke.call(this, event);
+  };
+
+  item.ontouchstart = function (event) {
+    lastTouchTime = Date.now();
+    eudic_onlineDictPlugin_log('ontouchstart', handlerName);
+    return invoke.call(this, event);
+  };
+
+  item.ontouchend = function (event) {
+    lastTouchTime = Date.now();
+    eudic_onlineDictPlugin_log('ontouchend', handlerName);
+    return invoke.call(this, event);
+  };
+
+  item.setAttribute('data-eudic-onlinedict-bound', '1');
+  eudic_onlineDictPlugin_log('bound', handlerName, item.tagName);
+}
+
+function eudic_onlineDictPlugin_bindSection(sectionDom, sectionId) {
+  if (!sectionDom) {
+    eudic_onlineDictPlugin_log('section-missing', sectionId);
+    return;
+  }
+
+  var itemList = sectionDom.querySelectorAll('[eudic-onlinedict-custom-onclick]');
+  eudic_onlineDictPlugin_log('section-found', sectionId || 'unknown', itemList ? itemList.length : 0);
+
+  if (itemList && itemList.length > 0) {
+    var _iterator = _createForOfIteratorHelper(itemList),
+        _step;
+
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var item = _step.value;
+        var itemFuncName = item.getAttribute('eudic-onlinedict-custom-onclick');
+        var func = window[itemFuncName];
+        eudic_onlineDictPlugin_log('bind-attempt', itemFuncName, _typeof(func));
+
+        if (typeof func === 'function') {
+          eudic_onlineDictPlugin_bindInput(item, func);
+        }
+      }
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+  }
+}
+
+function eudic_onlineDictPlugin_onloadFinish() {
+  var currentScript = eudic_onlineDictPlugin_getCurrentScript();
+
+  if (currentScript && currentScript.src) {
+    var scriptId = eudic_onlineDictPlugin_getParameterByName('id', currentScript.src);
+    eudic_onlineDictPlugin_log('onload', currentScript.src, scriptId);
+
+    if (scriptId) {
+      eudic_onlineDictPlugin_bindSection(document.getElementById('eudic-onlinedict-section-' + scriptId), scriptId);
+      return;
+    }
+  } else {
+    eudic_onlineDictPlugin_log('current-script-missing');
+  }
+
+  var sectionList = document.querySelectorAll('[id^="eudic-onlinedict-section-"]');
+  eudic_onlineDictPlugin_log('fallback-scan', sectionList ? sectionList.length : 0);
+
+  if (sectionList && sectionList.length > 0) {
+    var _iterator2 = _createForOfIteratorHelper(sectionList),
+        _step2;
+
+    try {
+      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+        var sectionDom = _step2.value;
+        var sectionId = sectionDom.id ? sectionDom.id.replace('eudic-onlinedict-section-', '') : '';
+        eudic_onlineDictPlugin_bindSection(sectionDom, sectionId);
+      }
+    } catch (err) {
+      _iterator2.e(err);
+    } finally {
+      _iterator2.f();
+    }
+  }
+}
+
+eudic_onlineDictPlugin_onloadFinish();
