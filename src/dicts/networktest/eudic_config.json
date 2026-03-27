@@ -1,0 +1,12 @@
+{
+    "manifest_version": 1,
+    "name": "NetworkTest",
+    "desc": "NetworkTest",
+    "module": {
+        "name": "NetworktestPlugin"
+    },
+    "version": 20260327,
+    "author": "Chandler",
+    "libid": 21000,
+    "enabled": true
+}

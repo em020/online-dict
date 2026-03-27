@@ -7,7 +7,7 @@ const isAnalyze = argv.analyze || argv.analyse
 
 const distPath = path.resolve(__dirname, '../dist')
 if (fs.pathExistsSync(distPath)) {
-    fs.rmdirSync(distPath, { recursive: true })
+    fs.removeSync(distPath)
 }
 
 const entryObject: any = {}
