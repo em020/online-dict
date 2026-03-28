@@ -155,6 +155,8 @@ function updateLatestSelectionLookup() {
   if (currentSelection) {
     latestSelectionLookup = currentSelection;
     console.log('[networktest] cached selection lookup', currentSelection.selectionText);
+  } else {
+    latestSelectionLookup = null;
   }
   return currentSelection;
 }
@@ -201,8 +203,7 @@ function updateSelectionLookupButtonState(button) {
     return;
   }
 
-  var cmd = getSelectionLookupCommand();
-  var enabled = !!cmd;
+  var enabled = !!readCurrentSelectionLookup();
   if ('disabled' in button) {
     button.disabled = !enabled;
   }
@@ -226,57 +227,40 @@ function injectSelectionLookupButton() {
   }
 
   var scrollToTop = document.getElementById('scrollToTop');
+  if (!scrollToTop) {
+    return;
+  }
+
   var button;
 
-  if (scrollToTop) {
-    var listItem = document.createElement('li');
-    listItem.id = 'networktest-selection-lookup-button';
-    listItem.title = '查找选中内容';
+  var listItem = document.createElement('li');
+  listItem.id = 'networktest-selection-lookup-button';
+  listItem.title = '查找选中内容';
 
-    var iconBox = document.createElement('span');
-    iconBox.className = 'imgBox';
-    iconBox.style.display = 'flex';
-    iconBox.style.alignItems = 'center';
-    iconBox.style.justifyContent = 'center';
+  var iconBox = document.createElement('span');
+  iconBox.className = 'imgBox';
+  iconBox.style.display = 'flex';
+  iconBox.style.alignItems = 'center';
+  iconBox.style.justifyContent = 'center';
 
-    var iconText = document.createElement('span');
-    iconText.innerText = '查';
-    iconText.style.display = 'block';
-    iconText.style.fontSize = '16px';
-    iconText.style.fontWeight = '700';
-    iconText.style.color = 'rgb(47, 47, 47)';
+  var iconText = document.createElement('span');
+  iconText.innerText = '查';
+  iconText.style.display = 'block';
+  iconText.style.fontSize = '16px';
+  iconText.style.fontWeight = '700';
+  iconText.style.color = 'rgb(47, 47, 47)';
 
-    iconBox.appendChild(iconText);
-    listItem.appendChild(iconBox);
+  iconBox.appendChild(iconText);
+  listItem.appendChild(iconBox);
 
-    var scrollBtn = document.getElementById('scrollBtn');
-    if (scrollBtn && scrollBtn.parentNode === scrollToTop) {
-      scrollToTop.insertBefore(listItem, scrollBtn.nextSibling);
-    } else {
-      scrollToTop.appendChild(listItem);
-    }
-
-    button = listItem;
+  var scrollBtn = document.getElementById('scrollBtn');
+  if (scrollBtn && scrollBtn.parentNode === scrollToTop) {
+    scrollToTop.insertBefore(listItem, scrollBtn.nextSibling);
   } else {
-    button = document.createElement('button');
-    button.id = 'networktest-selection-lookup-button';
-    button.type = 'button';
-    button.innerText = '查';
-    button.style.position = 'fixed';
-    button.style.top = '12px';
-    button.style.right = '12px';
-    button.style.zIndex = '2147483647';
-    button.style.padding = '8px 12px';
-    button.style.border = 'none';
-    button.style.borderRadius = '999px';
-    button.style.background = '#1a73e8';
-    button.style.color = '#fff';
-    button.style.fontSize = '13px';
-    button.style.fontWeight = '600';
-    button.style.boxShadow = '0 6px 18px rgba(26, 115, 232, 0.28)';
-    button.style.webkitAppearance = 'none';
-    (document.body || document.documentElement).appendChild(button);
+    scrollToTop.appendChild(listItem);
   }
+
+  button = listItem;
 
   button.addEventListener('mousedown', handleSelectionLookupButtonPress);
   button.addEventListener('touchstart', handleSelectionLookupButtonPress, {

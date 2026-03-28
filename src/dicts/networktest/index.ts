@@ -11,6 +11,7 @@ declare global {
 
 if (typeof window !== 'undefined' && !window.__eudicNetworkTestVConsole) {
     window.__eudicNetworkTestVConsole = new VConsole()
+    window.__eudicNetworkTestVConsole.hideSwitch()
 }
 
 export class NetworktestPlugin extends HtmlDictPlugin {
