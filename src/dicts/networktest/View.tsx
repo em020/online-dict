@@ -44,12 +44,12 @@ export const NetworktestView: FC<ViewPorps<any>> = ({ result }) => {
     }
 
     return (
-        <div className="networktest-Container">
-            <div id="networktest-global-q" className="networktest-GlobalQ">global_q: {globalQ}</div>
-            <button className="networktest-Button" disabled={loading} onClick={handleClick}>
+        <div className="networktest-Container nt-space-y-3">
+            <div id="networktest-global-q" className="networktest-GlobalQ nt-text-purple-600">global_q: {globalQ}</div>
+            <button className="networktest-Button nt-inline-flex nt-items-center nt-justify-center" disabled={loading} onClick={handleClick}>
                 {loading ? 'Loading...' : 'CLICK ME!'}
             </button>
-            <div id="network-test-result" className="networktest-Result">
+            <div id="network-test-result" className="networktest-Result nt-break-all">
                 {responseText}
             </div>
         </div>

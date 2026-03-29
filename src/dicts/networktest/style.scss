@@ -1,8 +1,24 @@
+@tailwind components;
+@tailwind utilities;
+
 .networktest-Container {
     padding: 10px;
     border: 1px solid #ddd;
     background: #fff;
 }
+
+.networktest-Container,
+.networktest-Container * {
+    box-sizing: border-box;
+}
+
+.networktest-Container button,
+.networktest-Container input,
+.networktest-Container textarea,
+.networktest-Container select {
+    font: inherit;
+}
+
 .networktest-Button {
     padding: 8px 16px;
     background: #007bff;

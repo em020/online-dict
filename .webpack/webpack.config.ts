@@ -109,6 +109,9 @@ export function mainConfig(publicDir: string, outputDir: string, entryObject:any
                         {
                             loader: "css-loader",
                         },
+                        {
+                            loader: 'postcss-loader',
+                        },
                         'sass-loader',
                         {
                             loader: 'sass-resources-loader',
