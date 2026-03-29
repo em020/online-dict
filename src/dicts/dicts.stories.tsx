@@ -23,6 +23,8 @@ import { DictLongman } from './longman/View'
 import { MacmillanUsPlugin } from './macmillan_us'
 import { DictMacmillan } from './base/macmillan/View'
 import { MacmillanUkPlugin } from './macmillan_uk'
+import { NetworktestPlugin } from './networktest'
+import { NetworktestView } from './networktest/View'
 import { WebsterlearnerPlugin } from './websterlearner'
 import { DictWebsterLearner } from './websterlearner/View'
 
@@ -65,6 +67,7 @@ export const TranslateTemplate: FC<ViewPorps<string>> = ({ result }) => {
 }
 
 const allDictPlugins = {
+    networktest: new StoryItem(new NetworktestPlugin, NetworktestView),
     bing: new StoryItem(new BingPlugin, DictBing),
     cambridge_en2en: new StoryItem(new CambridgeEn2EnPlugin, DictCambridge),
     cambridge_en2zh: new StoryItem(new CambridgeEn2ZhPlugin, DictCambridge),
@@ -87,6 +90,12 @@ async function generateAllParseResult(): Promise<any> {
     const allKeys = Object.keys(allDictPlugins)
     for (const item of allKeys) {
         const storyItem = allDictPlugins[item as keyof (typeof allDictPlugins)]
+        if (item === 'networktest') {
+            const plugin = storyItem.plugin as any
+            const parseResult = await plugin.parsePageResult({ word: 'storybook' }, 'storybook')
+            resultPlugins[item] = parseResult.result
+            continue
+        }
         //词典解释
         let htmlResult: any
         try {

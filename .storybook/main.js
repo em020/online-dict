@@ -32,6 +32,9 @@ module.exports = {
           //   sourceMap: process.env.NODE_ENV === 'development',
           // },
         },
+        {
+          loader: 'postcss-loader',
+        },
         // Compiles Sass to CSS
         "sass-loader",
         {

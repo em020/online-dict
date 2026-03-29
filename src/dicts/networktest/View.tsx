@@ -27,7 +27,7 @@ export const NetworktestView: FC<ViewPorps<any>> = ({ result }) => {
     const handleClick = () => {
         setLoading(true)
         setResponseText('Fetching...')
-        fetch('https://www.yunzhijia.com/yzjai/ai/chain', {
+        fetch('https://www.yunzhijia.com/yzjai/ai/chain/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: '{}'
@@ -45,11 +45,11 @@ export const NetworktestView: FC<ViewPorps<any>> = ({ result }) => {
 
     return (
         <div className="networktest-Container nt-space-y-3">
-            <div id="networktest-global-q" className="networktest-GlobalQ nt-text-purple-600">global_q: {globalQ}</div>
+            <div id="networktest-global-q" className="networktest-GlobalQ nt-text-red-600">global_q: {globalQ}</div>
             <button className="networktest-Button nt-inline-flex nt-items-center nt-justify-center" disabled={loading} onClick={handleClick}>
                 {loading ? 'Loading...' : 'CLICK ME!'}
             </button>
-            <div id="network-test-result" className="networktest-Result nt-break-all">
+            <div id="network-test-result" className="nt-break-all">
                 {responseText}
             </div>
         </div>
