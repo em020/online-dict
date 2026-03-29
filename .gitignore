@@ -3,3 +3,4 @@ test/dicts/**/response
 dist
 dicts_test_result.json
 /.idea
+/.claude
