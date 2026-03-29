@@ -43,6 +43,17 @@ The `HtmlDictPlugin.fetch()` flow: fetch raw HTML → parse into structured data
 
 `src/dicts/render.tsx` handles the React-to-HTML conversion. Each plugin's View component receives parsed data via `ViewPorps<T>` and renders to static markup. Links are rewritten to use Eudic's internal protocols.
 
+### React Hydration (Optional)
+
+Plugins can opt into client-side React interactivity by overriding `hydrateOptions()` in their plugin class (from `HtmlDictPlugin`, returns `HydrateOptions | null`). When enabled:
+
+- `render.tsx` wraps the SSR output in `<div id="eudic-hydrate-root-${uuid}">`, embeds serialized data as `<script id="eudic-hydrate-data-${uuid}" type="application/json">`, and adds a `<script defer src="file://client.js?id=${uuid}">` tag.
+- A `client.tsx` file in the plugin folder serves as the client entry — it reads the UUID from its script URL, parses the embedded JSON data, and calls `ReactDOM.hydrate()` to attach event listeners to the existing DOM.
+- Webpack auto-detects `client.tsx` files and produces a separate `client.js` bundle per plugin.
+- Plugins without `client.tsx` are unaffected — they continue to use static-only rendering.
+
+With hydration, View components can use `useState`, `useEffect`, and React event handlers. The existing `dict.js` (via `click.js` + `basedict.js`) continues to run for host-level side effects. Avoid letting both React and dict.js mutate the same DOM elements — any element React controls should be managed exclusively through React state.
+
 ### Helpers
 
 `src/dicts/helpers.ts` provides DOM parsing utilities (`getText`, `getInnerHTML`, `getOuterHTML`, `getFullLink`), DOMPurify sanitization, and `DictSearchResult<T>` type that wraps parsed results with optional audio and catalog metadata.
