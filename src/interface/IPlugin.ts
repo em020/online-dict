@@ -1,4 +1,4 @@
-import { renderReactToString } from '../dicts/render'
+import { renderReactToString, HydrateOptions } from '../dicts/render'
 import { FC } from 'react'
 import { IDictResult, ViewPorps } from './IDictResult'
 
@@ -26,10 +26,14 @@ export abstract class HtmlDictPlugin implements IPlugin {
     // react jsx 专用
     abstract htmlTemplate(): FC<ViewPorps<any>>
 
+    hydrateOptions(): HydrateOptions | null {
+        return null
+    }
+
     async fetch(uuid: string, word: string): Promise<IDictResult> {
         const pageResult = await this.getPageResult(word)
         const parseResult = await this.parsePageResult(pageResult, word)
-        const exp = renderReactToString(this.htmlTemplate(), parseResult.result, uuid)
+        const exp = renderReactToString(this.htmlTemplate(), parseResult.result, uuid, this.hydrateOptions())
         return { uuid, word, exp }
     }
 }

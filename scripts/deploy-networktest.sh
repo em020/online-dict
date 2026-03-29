@@ -7,6 +7,7 @@ DEST_DIR="/Users/yiminsun/Library/Eudb_en"
 FILES="
 index.js
 index.css
+client.js
 dict.js
 eudic_config.json
 "

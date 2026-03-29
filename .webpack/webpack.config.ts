@@ -28,6 +28,11 @@ export function generateConfigSettings(baseDir: string, outputDir: string, entry
             })
         }
 
+        const clientPath = path.join(baseDir, `../src/dicts/${pluginName}/client.tsx`)
+        if (fs.existsSync(clientPath)) {
+            entryObject[`${pluginName}/client`] = clientPath
+        }
+
         const dictJsPath = path.join(baseDir, `../src/dicts/${pluginName}/dict.js`)
         if (fs.existsSync(dictJsPath)) {
             copyCfgList.push({

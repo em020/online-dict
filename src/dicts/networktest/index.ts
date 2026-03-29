@@ -1,7 +1,9 @@
 import { HtmlDictPlugin } from '../../interface/IPlugin'
 import { NetworktestView } from './View'
 import { DictSearchResult } from '../helpers'
+import { HydrateOptions } from '../../dicts/render'
 import VConsole from 'vconsole'
+import './style.scss'
 
 declare global {
     interface Window {
@@ -27,5 +29,9 @@ export class NetworktestPlugin extends HtmlDictPlugin {
 
     htmlTemplate() {
         return NetworktestView
+    }
+
+    hydrateOptions(): HydrateOptions {
+        return { pluginName: 'networktest' }
     }
 }
