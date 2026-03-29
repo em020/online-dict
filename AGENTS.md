@@ -3,6 +3,9 @@
 ## Project Structure & Module Organization
 `src/dicts/` contains each dictionary plugin. A typical plugin includes `index.ts`, `View.tsx`, `pagefetch.ts`, `style.scss`, and `eudic_config.json`. Shared runtime bridges live under `src/dicts/base/`, and shared helpers/interfaces live in `src/dicts/helpers.ts` and `src/interface/`. Tests are under `test/dicts/<dict>/` with saved fixture responses beside each spec. Build output is written to `dist/`.
 
+## Documentation Sources
+`README.md` is currently outdated and should not be treated as the source of truth for project architecture or key implementation details. Refer to `CLAUDE.md` when you need the current architecture overview or implementation notes for core parts of the system.
+
 ## Build, Test, and Development Commands
 - `yarn dev`: runs `gulp` plus webpack in development mode.
 - `yarn buildonly`: regenerates `dict.js` via `gulp` and builds `dist/` in production mode.
