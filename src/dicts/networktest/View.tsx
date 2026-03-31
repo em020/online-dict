@@ -4,10 +4,82 @@ import { ViewPorps } from '../../interface/IDictResult'
 export const NetworktestView: FC<ViewPorps<any>> = ({ result }) => {
     const [responseText, setResponseText] = useState<string>('Click the button to see the result...')
     const [loading, setLoading] = useState(false)
+    const [storedId, setStoredId] = useState<string | null>(null)
 
     useEffect(() => {
         console.log(result)
-    }, []);
+        const word = result.word
+        const match = word && typeof word === 'string' ? word.match(/^Loading\.\.\.(.+)$/) : null
+
+        if (match) {
+            const objectId = match[1]
+            sessionStorage.setItem('pending_cid_id', objectId)
+
+            const delay = 210
+            console.log('[networktest] Loading pattern detected. ID:', objectId)
+
+            fetch(`http://127.0.0.1:8000/retrieve_string?key=${encodeURIComponent(objectId)}`)
+                .then(res => res.json())
+                .then(data => {
+                    const rawValue = data.value || 'helloSSYYMM'
+                    let reSearchWord: string
+                    let displayPayload: string | null = null
+
+                    const dualMatch = rawValue.match(/^(.+?)@@@(.+)$/)
+                    if (dualMatch) {
+                        reSearchWord = dualMatch[1].trim()
+                        displayPayload = dualMatch[2].trim()
+                        console.log(`[networktest] Dual pattern detected. Word: "${reSearchWord}", Payload: "${displayPayload}"`)
+                    } else {
+                        reSearchWord = rawValue
+                        displayPayload = objectId
+                    }
+
+                    sessionStorage.setItem('pending_cid_id', displayPayload)
+
+                    let cmd: string
+
+                    if (typeof (window as any).eudic_generateSearchWordCmd === 'function') {
+                        cmd = (window as any).eudic_generateSearchWordCmd(reSearchWord)
+                    } else {
+                        cmd = 'cmd://dict/searchword?word=' + encodeURIComponent(reSearchWord)
+                    }
+
+                    console.log(`[networktest] retrieved word: "${reSearchWord}". triggering auto re-search in ${delay}ms. Command:`, cmd)
+
+                    setTimeout(() => {
+                        console.log('[networktest] executing redirection now...')
+                        if (typeof (window as any).eudic_clientCallback === 'function') {
+                            (window as any).eudic_clientCallback(cmd)
+                        } else {
+                            window.location.href = cmd
+                        }
+                    }, delay)
+                })
+                .catch(err => {
+                    console.error('[networktest] failed to retrieve string:', err)
+                    // Fallback to placeholder if API fails
+                    const reSearchWord = 'helloSSYYMM'
+                    const cmd = (window as any).eudic_generateSearchWordCmd 
+                        ? (window as any).eudic_generateSearchWordCmd(reSearchWord)
+                        : 'cmd://dict/searchword?word=' + encodeURIComponent(reSearchWord)
+                    
+                    setTimeout(() => {
+                        if (typeof (window as any).eudic_clientCallback === 'function') {
+                            (window as any).eudic_clientCallback(cmd)
+                        } else {
+                            window.location.href = cmd
+                        }
+                    }, delay)
+                })
+        } else {
+            const pendingId = sessionStorage.getItem('pending_cid_id')
+            if (pendingId) {
+                setStoredId(pendingId)
+                sessionStorage.removeItem('pending_cid_id')
+            }
+        }
+    }, [result.word]);
 
     const handleClick = () => {
         setLoading(true)
@@ -46,6 +118,11 @@ export const NetworktestView: FC<ViewPorps<any>> = ({ result }) => {
                     onClick={handleClick2}>
                 {'BUTTON 2'}
             </button>
+            {storedId && (
+                <div className="networktest-StoredId nt-mt-2 nt-p-2 nt-bg-gray-100 nt-rounded">
+                    Stored ID: {storedId}
+                </div>
+            )}
         </div>
     )
 }
