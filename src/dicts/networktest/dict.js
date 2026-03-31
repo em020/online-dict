@@ -327,11 +327,11 @@ function onNetworkTestClick() {
     console.log('[networktest] fetch error', err && err.message ? err.message : err);
     resultEl.innerText = 'Error: ' + err.message;
   });
-}
+} // injectFoldOverrideStyle();
+// observeForcedFoldTargets();
+// updateNetworkTestGlobalQ(0);
 
-injectFoldOverrideStyle();
-observeForcedFoldTargets();
-updateNetworkTestGlobalQ(0);
+
 injectSelectionLookupButton();
 
 function eudic_onlineDictPlugin_getParameterByName(name, url) {

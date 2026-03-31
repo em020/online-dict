@@ -322,7 +322,7 @@ function onNetworkTestClick() {
   });
 }
 
-injectFoldOverrideStyle();
-observeForcedFoldTargets();
-updateNetworkTestGlobalQ(0);
+// injectFoldOverrideStyle();
+// observeForcedFoldTargets();
+// updateNetworkTestGlobalQ(0);
 injectSelectionLookupButton();

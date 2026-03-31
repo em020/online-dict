@@ -1,28 +1,13 @@
 import React, { FC, useState, useEffect } from 'react'
 import { ViewPorps } from '../../interface/IDictResult'
 
-const MAX_GLOBAL_Q_ATTEMPTS = 10
-const GLOBAL_Q_POLL_INTERVAL = 300
-
 export const NetworktestView: FC<ViewPorps<any>> = ({ result }) => {
     const [responseText, setResponseText] = useState<string>('Click the button to see the result...')
     const [loading, setLoading] = useState(false)
-    const [globalQ, setGlobalQ] = useState<string>('')
 
     useEffect(() => {
-        let attempts = 0
-        const poll = () => {
-            const gq = (window as any).global_q
-            if (typeof gq !== 'undefined' && gq !== null && gq !== '') {
-                setGlobalQ(String(gq))
-                return
-            }
-            if (++attempts < MAX_GLOBAL_Q_ATTEMPTS) {
-                setTimeout(poll, GLOBAL_Q_POLL_INTERVAL)
-            }
-        }
-        poll()
-    }, [])
+        console.log(result)
+    }, []);
 
     const handleClick = () => {
         setLoading(true)
@@ -43,15 +28,24 @@ export const NetworktestView: FC<ViewPorps<any>> = ({ result }) => {
             })
     }
 
+    const handleClick2 = () => {
+        console.log("button 2 clicked")
+    }
+
     return (
         <div className="networktest-Container nt-space-y-3">
-            <div id="networktest-global-q" className="networktest-GlobalQ nt-text-red-600">global_q: {globalQ}</div>
-            <button className="networktest-Button nt-inline-flex nt-items-center nt-justify-center" disabled={loading} onClick={handleClick}>
+            <div id="networktest-global-q" className="networktest-GlobalQ nt-font-bold">{result.word}</div>
+            <button className="networktest-Button nt-inline-flex nt-items-center nt-justify-center" disabled={loading}
+                    onClick={handleClick}>
                 {loading ? 'Loading...' : 'CLICK ME!'}
             </button>
             <div id="network-test-result" className="nt-break-all">
                 {responseText}
             </div>
+            <button className="networktest-Button nt-inline-flex nt-items-center nt-justify-center"
+                    onClick={handleClick2}>
+                {'BUTTON 2'}
+            </button>
         </div>
     )
 }
