@@ -146,6 +146,20 @@ function eudic_onlineDictPlugin_bindSection(sectionDom, sectionId) {
   }
 }
 
+function eudic_onlineDictPlugin_injectGlobalStyles() {
+  if (document.getElementById('eudic-online-dict-global-overrides')) {
+    return;
+  }
+
+  var style = document.createElement('style');
+  style.id = 'eudic-online-dict-global-overrides';
+  style.textContent = "\n        .eudic_head_sentence {\n            white-space: nowrap !important;\n            overflow: hidden !important;\n            text-overflow: ellipsis !important;\n            display: block !important;\n            max-width: 100% !important;\n        }\n    ";
+  (document.head || document.documentElement).appendChild(style);
+  eudic_onlineDictPlugin_log('global-styles-injected');
+}
+
+eudic_onlineDictPlugin_injectGlobalStyles();
+
 function eudic_onlineDictPlugin_onloadFinish() {
   var currentScript = eudic_onlineDictPlugin_getCurrentScript();
 
