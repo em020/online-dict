@@ -5,6 +5,7 @@ export const NetworktestView: FC<ViewPorps<any>> = ({ result }) => {
     const [responseText, setResponseText] = useState<string>('Click the button to see the result...')
     const [loading, setLoading] = useState(false)
     const [storedId, setStoredId] = useState<string | null>(null)
+    const [isDivVisible, setIsDivVisible] = useState(false)
 
     useEffect(() => {
         console.log(result)
@@ -102,6 +103,7 @@ export const NetworktestView: FC<ViewPorps<any>> = ({ result }) => {
 
     const handleClick2 = () => {
         console.log("button 2 clicked")
+        setIsDivVisible(!isDivVisible)
     }
 
     return (
@@ -121,6 +123,11 @@ export const NetworktestView: FC<ViewPorps<any>> = ({ result }) => {
             {storedId && (
                 <div className="networktest-StoredId nt-mt-2 nt-p-2 nt-bg-gray-100 nt-rounded">
                     Stored ID: {storedId}
+                </div>
+            )}
+            {isDivVisible && (
+                <div className="nt-h-[300px] nt-bg-gray-100 nt-border nt-border-gray-300 nt-mt-2.5">
+                    This is a 300px fixed height div.
                 </div>
             )}
         </div>
