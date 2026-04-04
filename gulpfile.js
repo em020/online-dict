@@ -7,6 +7,7 @@ var path = require('path');
 function buildAll(done) {
     const clickJsList = glob.sync(path.join(__dirname, './src/dicts/**/click.js'));
     const baseDictJs = path.join(__dirname, './src/dicts/base/basedict.js');
+    const selectionContextJs = path.join(__dirname, './src/dicts/base/selection-context.js');
 
     const tasks = clickJsList.map((clickJs) => {
         function patchJs() {
@@ -14,7 +15,7 @@ function buildAll(done) {
             destFolderList.pop();
             const destFolder = destFolderList.join('/');
 
-            return gulp.src([clickJs, baseDictJs])
+            return gulp.src([selectionContextJs, clickJs, baseDictJs])
                 .pipe(concat('dict.js'))
                 .pipe(babel({
                     presets: ['@babel/env']
