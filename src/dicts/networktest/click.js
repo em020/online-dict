@@ -183,6 +183,64 @@ function findSentenceSourceElement(node) {
   return document.body || document.documentElement;
 }
 
+// Walk text nodes in DOM order under sourceEl to compute the absolute character
+// offset of (targetNode, targetOffset) within sourceEl's full text content.
+// Returns -1 if targetNode cannot be found under sourceEl.
+function getTextNodeOffset(sourceEl, targetNode, targetOffset) {
+  if (!targetNode || !sourceEl) {
+    return -1;
+  }
+
+  // If startContainer is an element node, resolve it to a child text node.
+  var textNode = targetNode;
+  var textOffset = targetOffset;
+  if (targetNode.nodeType !== 3) {
+    var child = targetNode.childNodes && targetNode.childNodes[targetOffset];
+    if (child && child.nodeType === 3) {
+      textNode = child;
+      textOffset = 0;
+    } else {
+      return -1;
+    }
+  }
+
+  var pos = 0;
+  var walker = document.createTreeWalker(sourceEl, 4 /* SHOW_TEXT */, null, false);
+  var node;
+  while ((node = walker.nextNode())) {
+    if (node === textNode) {
+      return pos + textOffset;
+    }
+    pos += node.textContent.length;
+  }
+
+  return -1;
+}
+
+// Find the sentence whose character range contains the given absolute offset
+// within text, using character positions rather than content matching.
+function findSentenceAtOffset(text, offset) {
+  var regex = /[^.!?。！？\n]+[.!?。！？\n]*/g;
+  var match;
+  var lastMatch = null;
+
+  while ((match = regex.exec(text)) !== null) {
+    lastMatch = match;
+    var start = match.index;
+    var end = start + match[0].length;
+    if (offset >= start && offset < end) {
+      return normalizeSelectionText(match[0]);
+    }
+  }
+
+  // offset fell past the last sentence boundary (e.g. trailing whitespace)
+  if (lastMatch) {
+    return normalizeSelectionText(lastMatch[0]);
+  }
+
+  return normalizeSelectionText(text);
+}
+
 function getSelectionSentenceContext(selection, selectionText) {
   if (!selection || !selection.rangeCount) {
     return '';
@@ -194,6 +252,12 @@ function getSelectionSentenceContext(selection, selectionText) {
     return '';
   }
 
+  var offset = getTextNodeOffset(sourceEl, range.startContainer, range.startOffset);
+  if (offset >= 0) {
+    return findSentenceAtOffset(sourceEl.textContent, offset);
+  }
+
+  // Fallback: word-match heuristic if offset resolution failed.
   return findNearestSentenceContext(sourceEl.textContent, selectionText);
 }
 
@@ -325,7 +389,8 @@ function handleSelectionLookupButtonPress(event) {
   }
 
   updateLatestSelectionLookup();
-  triggerSelectionLookup();
+  // triggerSelectionLookup();
+  logSelectionDump('lookup_fab')
 }
 
 function injectSelectionLookupButton() {
