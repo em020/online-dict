@@ -136,18 +136,86 @@ function updateNetworkTestGlobalQ(attempt) {
 }
 
 var latestSelectionLookup = null;
+var hasInjectedGlobalDoubleClickListener = false;
 
-function readCurrentSelectionLookup() {
-  var selectionText = '';
-  var context = '';
+function normalizeSelectionText(text) {
+  return String(text || '').replace(/\s+/g, ' ').trim();
+}
 
-  if (typeof window.eudicGetSelection === 'function') {
-    var selection = window.eudicGetSelection();
-    selectionText = selection && selection.selectionText ? String(selection.selectionText).trim() : '';
-    context = selection && selection.context ? String(selection.context) : '';
-  } else if (typeof window.getSelection === 'function') {
-    selectionText = String(window.getSelection()).trim();
+function splitSentenceCandidates(text) {
+  var matches = String(text || '').match(/[^.!?。！？\n]+[.!?。！？\n]*/g);
+  return matches || [];
+}
+
+function findNearestSentenceContext(text, selectionText) {
+  var sentences = splitSentenceCandidates(text);
+  var normalizedSelection = normalizeSelectionText(selectionText);
+
+  if (sentences.length === 0) {
+    return normalizeSelectionText(text);
   }
+
+  for (var i = 0; i < sentences.length; i++) {
+    var sentence = normalizeSelectionText(sentences[i]);
+
+    if (!normalizedSelection || sentence.indexOf(normalizedSelection) !== -1) {
+      return sentence;
+    }
+  }
+
+  return normalizeSelectionText(sentences[0]);
+}
+
+function findSentenceSourceElement(node) {
+  var current = node;
+
+  if (!current) {
+    return document.body || document.documentElement;
+  }
+
+  if (current.nodeType === 3) {
+    current = current.parentNode;
+  }
+
+  while (current && current.nodeType === 1) {
+    var tagName = current.tagName ? current.tagName.toUpperCase() : '';
+
+    if (tagName === 'P' || tagName === 'LI' || tagName === 'DIV' || tagName === 'SPAN' || tagName === 'TD' || tagName === 'TH' || tagName === 'ARTICLE' || tagName === 'SECTION' || tagName === 'DD' || tagName === 'DT') {
+      return current;
+    }
+
+    if (current === document.body || current === document.documentElement) {
+      return current;
+    }
+
+    current = current.parentNode;
+  }
+
+  return document.body || document.documentElement;
+}
+
+function getSelectionSentenceContext(selection, selectionText) {
+  if (!selection || !selection.rangeCount) {
+    return '';
+  }
+
+  var range = selection.getRangeAt(0);
+  var sourceEl = findSentenceSourceElement(range.startContainer || selection.anchorNode || null);
+
+  if (!sourceEl || !sourceEl.textContent) {
+    return '';
+  }
+
+  return findNearestSentenceContext(sourceEl.textContent, selectionText);
+}
+
+function readFallbackSelectionLookup() {
+  if (typeof window.getSelection !== 'function') {
+    return null;
+  }
+
+  var rawSelection = window.getSelection();
+  var selectionText = normalizeSelectionText(rawSelection);
 
   if (!selectionText) {
     return null;
@@ -155,8 +223,12 @@ function readCurrentSelectionLookup() {
 
   return {
     selectionText: selectionText,
-    context: context
+    context: getSelectionSentenceContext(rawSelection, selectionText)
   };
+}
+
+function readCurrentSelectionLookup() {
+  return readFallbackSelectionLookup();
 }
 
 function updateLatestSelectionLookup() {
@@ -172,12 +244,18 @@ function updateLatestSelectionLookup() {
   return currentSelection;
 }
 
-function getSelectionLookupCommand() {
+function getCurrentSelectionLookup() {
   var selection = readCurrentSelectionLookup();
 
   if (!selection && latestSelectionLookup) {
     selection = latestSelectionLookup;
   }
+
+  return selection;
+}
+
+function getSelectionLookupCommand() {
+  var selection = getCurrentSelectionLookup();
 
   if (!selection) {
     console.log('[networktest] no selection available for lookup');
@@ -224,6 +302,35 @@ function updateSelectionLookupButtonState(button) {
 
   button.style.opacity = enabled ? '1' : '0.45';
   button.style.pointerEvents = enabled ? 'auto' : 'none';
+}
+
+function logSelectionDump(source) {
+  var selection = getCurrentSelectionLookup();
+
+  if (!selection) {
+    console.log('[networktest] ' + source + ' selection unavailable');
+    return;
+  }
+
+  console.log('[networktest] ' + source + ' selection dump', {
+    word: selection.selectionText,
+    sentence: selection.context || ''
+  });
+}
+
+function injectGlobalDoubleClickListener() {
+  if (hasInjectedGlobalDoubleClickListener) {
+    return;
+  }
+
+  hasInjectedGlobalDoubleClickListener = true;
+  document.addEventListener('dblclick', function () {
+    window.setTimeout(function () {
+      updateLatestSelectionLookup();
+      logSelectionDump('dblclick');
+    }, 0);
+  }, true);
+  console.log('[networktest] global dblclick listener injected');
 }
 
 function handleSelectionLookupButtonPress(event) {
@@ -332,7 +439,8 @@ function onNetworkTestClick() {
 // updateNetworkTestGlobalQ(0);
 
 
-injectSelectionLookupButton();
+injectGlobalDoubleClickListener();
+injectSelectionLookupButton(); // window.eudic_clientCallback = () => {}
 
 function eudic_onlineDictPlugin_getParameterByName(name, url) {
   name = name.replace(/[\[\]]/g, '\\$&');
