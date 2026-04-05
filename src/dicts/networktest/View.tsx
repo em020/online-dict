@@ -1,6 +1,17 @@
 import React, { FC, useState, useEffect } from 'react'
 import { ViewPorps } from '../../interface/IDictResult'
 
+const buildSearchCmd = (word: string): string => {
+    // if (typeof (window as any).eudic_generateSearchWordCmd === 'function') {
+    //     return (window as any).eudic_generateSearchWordCmd(word)
+    // }
+    // return 'cmd://dict/searchword?word=' + encodeURIComponent(word)
+
+    // sanitize reason: the eudic_clientCallback bridge seems does not like the '%', even url escaped won't do
+    const sanitizedWord = word.replace(/%/g, ' percent')
+    return `cmd://dict/searchword?word=${sanitizedWord}`
+}
+
 export const NetworktestView: FC<ViewPorps<any>> = ({ result }) => {
     const [responseText, setResponseText] = useState<string>('Click the button to see the result...')
     const [loading, setLoading] = useState(false)
@@ -38,13 +49,7 @@ export const NetworktestView: FC<ViewPorps<any>> = ({ result }) => {
 
                     sessionStorage.setItem('pending_cid_id', displayPayload)
 
-                    let cmd: string
-
-                    if (typeof (window as any).eudic_generateSearchWordCmd === 'function') {
-                        cmd = (window as any).eudic_generateSearchWordCmd(reSearchWord)
-                    } else {
-                        cmd = 'cmd://dict/searchword?word=' + encodeURIComponent(reSearchWord)
-                    }
+                    const cmd = buildSearchCmd(reSearchWord)
 
                     console.log(`[networktest] retrieved word: "${reSearchWord}". triggering auto re-search in ${delay}ms. Command:`, cmd)
 
@@ -61,10 +66,8 @@ export const NetworktestView: FC<ViewPorps<any>> = ({ result }) => {
                     console.error('[networktest] failed to retrieve string:', err)
                     // Fallback to placeholder if API fails
                     const reSearchWord = 'helloSSYYMM'
-                    const cmd = (window as any).eudic_generateSearchWordCmd 
-                        ? (window as any).eudic_generateSearchWordCmd(reSearchWord)
-                        : 'cmd://dict/searchword?word=' + encodeURIComponent(reSearchWord)
-                    
+                    const cmd = buildSearchCmd(reSearchWord)
+
                     setTimeout(() => {
                         if (typeof (window as any).eudic_clientCallback === 'function') {
                             (window as any).eudic_clientCallback(cmd)
