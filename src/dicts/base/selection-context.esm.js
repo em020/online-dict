@@ -20,15 +20,43 @@ function normalizeText(text) {
   return String(text || '').replace(/\s+/g, ' ').trim();
 }
 
+// Abbreviations whose trailing dot must never be treated as a sentence
+// boundary.  Built once at module load time.
+var ABBREV_RE = (function() {
+  var list = [
+    // Titles
+    'Mr', 'Mrs', 'Ms', 'Dr', 'Prof', 'Rev',
+    'Sr', 'Jr', 'Lt', 'Sgt', 'Cpl', 'Col', 'Gen', 'Capt', 'Gov', 'Sen', 'Rep',
+    // Address
+    'St', 'Ave', 'Blvd', 'Rd', 'Ln',
+    // Common prose
+    'vs', 'etc', 'approx', 'dept', 'est', 'vol', 'fig', 'no',
+    // Calendar
+    'Jan', 'Feb', 'Mar', 'Apr', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
+  return new RegExp('\\b(' + list.join('|') + ')\\.', 'g');
+}());
+
+// Placeholder replaces abbreviation dots so the sentence regex never sees them.
+// \x00 (null byte) won't appear in normal prose and is exactly 1 character,
+// so character offsets in the results stay valid against the original string.
+var ABBREV_DOT = '\x00';
+
 // Split text into sentences, preserving the start/end character position of
 // each segment so callers can do position-based lookup.
 function splitSentencesWithPositions(text) {
-  var regex = /[^.!?。！？\n]+[.!?。！？\n]*/g;
+  // Hide abbreviation dots before splitting, restore them in the output.
+  var processed = text
+    .replace(/\be\.g\./g, 'e' + ABBREV_DOT + 'g' + ABBREV_DOT)
+    .replace(/\bi\.e\./g, 'i' + ABBREV_DOT + 'e' + ABBREV_DOT)
+    .replace(ABBREV_RE, '$1' + ABBREV_DOT);
+
+  var regex = /(?:\d+(?:\.\d+)+|[A-Z]\.|[^.!?。！？\n])+[.!?。！？\n]*/g;
   var results = [];
   var match;
-  while ((match = regex.exec(text)) !== null) {
+  while ((match = regex.exec(processed)) !== null) {
     results.push({
-      text: match[0],
+      text: match[0].replace(/\x00/g, '.'),
       start: match.index,
       end: match.index + match[0].length
     });
