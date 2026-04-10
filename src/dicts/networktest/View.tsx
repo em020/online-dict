@@ -106,8 +106,19 @@ export const NetworktestView: FC<ViewPorps<any>> = ({ result }) => {
 
     const handleClick2 = () => {
         console.log("button 2 clicked")
-        setIsDivVisible(!isDivVisible)
+        setIsDivVisible(prev => !prev)
     }
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.metaKey && e.key === 'd') {
+                e.preventDefault()
+                setIsDivVisible(prev => !prev)
+            }
+        }
+        window.addEventListener('keydown', handleKeyDown)
+        return () => window.removeEventListener('keydown', handleKeyDown)
+    }, [])
 
     return (
         <div className="networktest-Container nt-space-y-3">
