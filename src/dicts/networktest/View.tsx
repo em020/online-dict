@@ -37,10 +37,10 @@ export const NetworktestView: FC<ViewPorps<any>> = ({ result }) => {
                     let reSearchWord: string
                     let displayPayload: string | null = null
 
-                    const dualMatch = rawValue.match(/^(.+?)@@@(.+)$/)
+                    const dualMatch = rawValue.match(/^(.+?)@@@([\s\S]+)$/)
                     if (dualMatch) {
                         reSearchWord = dualMatch[1].trim()
-                        displayPayload = dualMatch[2].trim()
+                        displayPayload = dualMatch[2].replace(/[\r\n]+/g, ' ').trim()
                         console.log(`[networktest] Dual pattern detected. Word: "${reSearchWord}", Payload: "${displayPayload}"`)
                     } else {
                         reSearchWord = rawValue
